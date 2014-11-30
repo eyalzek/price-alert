@@ -1,2 +1,3 @@
-replace_me_with_email_username
-replace_me_with_email_password
+[email]
+user = youremail@gmail.com
+pass = yourpassword
