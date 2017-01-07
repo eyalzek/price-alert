@@ -1,0 +1,13 @@
+{
+    "email": {
+        "smtp_url": "smtp.gmail.com:587",
+        "user": "youremail@gmail.com",
+        "password": "yourpassword"
+    },
+    "base_url": "https://www.amazon.de/dp/",
+    "xpath_selector": "//*[@id='priceblock_ourprice']",
+    "items": [
+        ["B00ZDWLEEG",100],
+        ["B0189XZKXG", 200]
+    ]
+}
