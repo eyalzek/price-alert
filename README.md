@@ -4,9 +4,15 @@ Amazon price alert
 Poll an Amazon sale page (or multiple pages) for a maximum price and send yourself an email if the price check passes.
 
 ## Installation
-Clone the repository. This code was written for python 2.7, you should also have [pip](https://pip.pypa.io/en/stable/) installed. To install external dependencies:
+Clone the repository. This code was written for python 3 (3.6.3), you should also have [pip](https://pip.pypa.io/en/stable/) installed.
 
-`pip install -r requirements.txt`
+- To install required libraries:
+
+`pip install --user -r requirements.txt`
+
+note that one the libraries used is the `lxml` library, which requires a couple of extra packages on Ubuntu:
+
+`[sudo] apt install libxml2-dev libxslt-dev`
 
 ## Configuration
 Configuration is held in json format, `config.json` is used by default and has some configuration for reference, but a different file can be passed using the command line flags. you must set your email credentials. Required configuration:
@@ -46,3 +52,9 @@ when running without any arguments, the script will use `config.json` for config
 ### Other sale pages/email client
 The script was tested on Amazon, so if you try running it on a different site make sure that `xpath_selector` is set correctly in the configuration json and that the price check itself is correct.
 The smtp client is configured for Gmail, so be sure to change it if you're using a different one.
+
+
+### TODO
+- add tests
+- add CI
+- override configuration via arguments/environment variables
