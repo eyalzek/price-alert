@@ -7,7 +7,7 @@
     "base_url": "https://www.amazon.de/dp/",
     "xpath_selector": "//*[@id='priceblock_ourprice']",
     "items": [
-        ["B00ZDWLEEG",100],
-        ["B0189XZKXG", 200]
+        ["B01J90P010", 50],
+        ["B01M3015CT", 100]
     ]
 }
