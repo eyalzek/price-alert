@@ -62,5 +62,5 @@ while True:
         else:
             print("Prices are {}. Ignoring...".format(prices))
 
-    print "Sleeping for {} seconds".format(SLEEP_INTERVAL)
+    print("Sleeping for {} seconds".format(SLEEP_INTERVAL))
     time.sleep(SLEEP_INTERVAL)
