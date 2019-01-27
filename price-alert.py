@@ -37,10 +37,10 @@ def send_email(price, url, email_info):
 
 
 def get_price(url, selector):
-    r = requests.get(url, headers={
+    r = requests.Session().get(url, headers={
         'User-Agent':
             'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-            '(KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36'
+            '(KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
     })
     r.raise_for_status()
     tree = html.fromstring(r.text)
