@@ -1,2 +1,4 @@
 lxml==4.6.3
 requests==2.25.1
+sure==1.4.11
+httpretty==1.1.3
