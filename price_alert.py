@@ -56,7 +56,23 @@ def get_price(url, selector):
 
 def get_config(config):
     with open(config, 'r') as f:
-        return json.loads(f.read())
+        return env_override(json.loads(f.read()))
+
+
+def env_override(config):
+    logger.debug(config)
+    overrides = {k.replace('PRICE_ALERT_', '').lower(): v for k,
+                 v in os.environ.items() if k.startswith('PRICE_ALERT_')}
+    nested = [k for k in overrides.keys() if len(k.split('__')) > 1]
+    for n in nested:
+        x, y = n.split('__')
+        config.setdefault(x, {})
+        config[x].update({y: overrides[n]})
+        del overrides[n]
+    config.update(overrides)
+    logger.debug(overrides)
+    logger.debug(config)
+    return config
 
 
 def config_logger(debug):
