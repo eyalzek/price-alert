@@ -37,24 +37,28 @@ Configuration is held in json format, `config.json` is used by default and has s
 
 ```
 $ ./price-alert.py --help
-usage: price-alert.py [-h] [-c CONFIG] [-t POLL_INTERVAL]
+Usage: price-alert.py [OPTIONS]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -c CONFIG, --config CONFIG
-                        Configuration file path
-  -t POLL_INTERVAL, --poll-interval POLL_INTERVAL
-                        Time in seconds between checks
+Options:
+  -t, --pool-interval INTEGER  Time in seconds between checks
+  -d, --debug BOOLEAN          If true set debug level to DEBUG
+  --base-url TEXT              base url to crawl.
+  --xpath-selector TEXT        xpath selector to crawl.
+  -i, --items LIST             List of items to crawl
+  --smtp_url TEXT              smtp url for the email notification
+  --user_email TEXT            user for the email notification
+  --pass_email TEXT            password for the email notification
+  --help                       Show this message and exit.
 ```
 
-when running without any arguments, the script will use `config.json` for configuration and the default polling interval of 30 seconds.
+when running without any arguments, the script will use the default configuration setted up on [cfg.py](cfg.py)
+alternatively you can set up the configurations as env vars. check namings on [cfg.py](cfg.py)
 
 ### Other sale pages/email client
-The script was tested on Amazon, so if you try running it on a different site make sure that `xpath_selector` is set correctly in the configuration json and that the price check itself is correct.
+The script was tested on Amazon, so if you try running it on a different site make sure that `xpath_selector` is set correctly in [cfg.py](cfg.py) and that the price check itself is correct.
 The smtp client is configured for Gmail, so be sure to change it if you're using a different one.
 
 
 ### TODO
 - add tests
 - add CI
-- override configuration via arguments/environment variables

@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 
-import os
 import re
-import json
 import time
 import requests
 import smtplib
-import argparse
 import logging
+import click
+import json
 from copy import copy
 from lxml import html
 from urllib.parse import urljoin
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from cfg import (
+    default_pool_interval,
+    default_debug,
+    default_base_url,
+    default_xpath_selector,
+    default_items,
+    default_smtp_url,
+    default_user_email,
+    default_pass_email,
+)
 
 
 def send_email(price, url, email_info):
@@ -54,11 +63,6 @@ def get_price(url, selector):
         logger.info('Didn\'t find the \'price\' element, trying again later')
 
 
-def get_config(config):
-    with open(config, 'r') as f:
-        return json.loads(f.read())
-
-
 def config_logger(debug):
     global logger
     logger = logging.getLogger()
@@ -67,43 +71,62 @@ def config_logger(debug):
     logger.addHandler(handler)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config',
-                        default='%s/config.json' % os.path.dirname(
-                            os.path.realpath(__file__)),
-                        help='Configuration file path')
-    parser.add_argument('-t', '--poll-interval', type=int, default=30,
-                        help='Time in seconds between checks')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='Enable debug level logging')
-    return parser.parse_args()
+@click.command()
+@click.option('-t', '--pool-interval',
+              type=int, default=default_pool_interval,
+              help='Time in seconds between checks')
+@click.option('-d', '--debug',
+              type=bool, default=default_debug,
+              help='If true set debug level to DEBUG')
+@click.option('-b', '--base-url',
+              type=str, default=default_base_url,
+              help='base url to crawl.')
+@click.option('-x', '--xpath-selector',
+              type=str, default=default_xpath_selector,
+              help='xpath selector to crawl.')
+@click.option('-i', '--json-items',
+              type=str, default=default_items,
+              help='List of items to crawl in json format')
+@click.option('-s', '--smtp-url',
+              type=str, default=default_smtp_url,
+              help='smtp url for the email notification')
+@click.option('-u', '--user-email',
+              type=str, default=default_user_email,
+              help='user for the email notification')
+@click.option('-p', '--pass-email',
+              type=str, default=default_pass_email,
+              help='password for the email notification')
+def main(
+    pool_interval, debug, base_url, xpath_selector, json_items, smtp_url,
+    user_email, pass_email
+):
+    config_logger(debug)
 
-
-def main():
-    args = parse_args()
-    config_logger(args.debug)
-    config = get_config(args.config)
-    items = config['items']
+    email = {
+        "smtp_url": smtp_url,
+        "user": user_email,
+        "password": pass_email
+    }
+    items = json.loads(json_items)
 
     while True and len(items):
         for item in copy(items):
-            logger.info('Checking price for %s (should be lower than %s)' % (
-                item[0], item[1]))
-            item_page = urljoin(config['base_url'], item[0])
-            price = get_price(item_page, config['xpath_selector'])
+            logger.info(f'Checking price for {item[0]} (should be lower than {item[1]})')
+            item_page = urljoin(base_url, item[0])
+            price = get_price(item_page, xpath_selector)
             if not price:
+                logger.info(f'No price found for {item_page}')
                 continue
             elif price <= item[1]:
-                logger.info('Price is %s!! Trying to send email.' % price)
-                send_email(price, item_page, config['email'])
+                logger.info(f'Price is {price}!! Trying to send email.')
+                send_email(price, item_page, email)
                 items.remove(item)
             else:
-                logger.info('Price is %s. Ignoring...' % price)
+                logger.info(f'Price is {price}. Ignoring...')
 
         if len(items):
-            logger.info('Sleeping for %d seconds' % args.poll_interval)
-            time.sleep(args.poll_interval)
+            logger.info(f'Sleeping for {pool_interval} seconds')
+            time.sleep(pool_interval)
         else:
             break
     logger.info('Price alert triggered for all items, exiting.')
